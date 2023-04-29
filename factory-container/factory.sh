@@ -162,7 +162,8 @@ local distdir="$output_dir/klipper-fw-$tag_name"
 [[ -d $distdir ]] || mkdir $distdir
 distdir="$(realpath "$distdir")"
 
-cp out/klipper.* "$distdir"
+shopt -s nullglob
+cp out/klipper.* pru?.elf "$distdir"
 cd "$distdir"
 for i in klipper.*; do
 	mv "$i" "${i/klipper/klipper-$config_name}"
