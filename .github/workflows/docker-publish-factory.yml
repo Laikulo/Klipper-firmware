@@ -12,10 +12,10 @@ on:
         description: Klipper Version
         type: string
         required: false
-    tagName:
-        description: Tag to create
-        type: string
-        required: false
+      tagName:
+          description: Tag to create
+          type: string
+          required: false
 
 env:
   # Use docker.io for Docker Hub if empty
