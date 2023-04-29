@@ -9,6 +9,8 @@ function print_usage() {
 	options:
 	-c The path to the Kconfig to build with
 	-C The name of a built-in test config to build
+	-o Output Directory
+	-d Klipper source tree location
 	-h This help
 	-v Verbose builds
 	END
@@ -79,10 +81,11 @@ OPT_VERBOSE=""
 OPT_EXPLICIT_CONFIG=""
 OPT_TEST_CONFIG=""
 OPT_KLIPPER_DIR=""
+OPT_OUTPUT_DIR=""
 
 ARGS_BAD=""
 
-while getopts "vhc:C:d:" arg; do
+while getopts "vhc:C:d:o:" arg; do
 	case $arg in
 		h)
 			print_usage
@@ -100,6 +103,9 @@ while getopts "vhc:C:d:" arg; do
 		d)
 			OPT_KLIPPER_DIR="${OPTARG}"
 			;;
+		o)
+			OPT_OUTPUT_DIR="${OPTARG}"
+			;;
 		?)
 			ARGS_BAD=1
 			;;
@@ -115,6 +121,8 @@ any "$OPT_EXPLICIT_CONFIG" "$OPT_TEST_CONFIG" "$KLIPPER_FACTORY_CONFIG_FILE" "$K
 one "$OPT_EXPLICIT_CONFIG" "$OPT_TEST_CONFIG" "$KLIPPER_FACTORY_CONFIG_FILE" "$KLIPPER_FACTORY_TESTCONFIG_NAME" || die "Build config is specified more than once" 2 y
 
 one "$OPT_KLIPPER_DIR" "$KLIPPER_DIR" || die "Klipper directory not specified" 2 y
+
+local output_dir="$(coalesce "$OPT_OUTPUT_DIR" "$KLIPPER_FACTORY_OUTPUT_DIR" "$KLIPPER_DIR/dist")"
 
 local klipper_workdir="$(coalesce "$OPT_KLIPPER_DIR" "$KLIPPER_DIR")"
 
@@ -149,8 +157,8 @@ make olddefconfig
 echo >&2 "Building"
 make
 echo >&2 "Collecting results"
-[[ -d ../dist ]] || mkdir ../dist
-local distdir="../dist/klipper-fw-$tag_name"
+[[ -d $output_dir ]] || mkdir "$output_dir"
+local distdir="$output_dir/klipper-fw-$tag_name"
 [[ -d $distdir ]] || mkdir $distdir
 distdir="$(realpath "$distdir")"
 
@@ -161,9 +169,9 @@ for i in klipper.*; do
 done
 echo >&2 Built: klipper-* in "$distdir"
 
-tar -czf "$distdir/../klipper-fw-$tag_name.tgz" -C "$distdir/.." "$(basename "$distdir")"
+tar -czf "$output_dir/klipper-fw-$tag_name.tgz" -C "$output_dir" "$(basename "$distdir")"
 
-echo >&2 Created Archive at "$(realpath $distdir/../klipper-fw-$tag_name.tgz)"
+echo >&2 Created Archive at "$(realpath "$output_dir/klipper-fw-$tag_name.tgz")"
 
 echo >&2 "Complete"
 	
