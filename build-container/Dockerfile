@@ -8,7 +8,7 @@ RUN zypper -n ar -C "obs://home:Laikulo:cross-pru" cross-pru && \
         cross-pru-binutils cross-pru-gcc${gcc_version} cross-pru-newlib-devel gnuprumcu \
         cross-arm-none-gcc${gcc_version} cross-arm-none-newlib-devel && \
     alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 309 && \
-    alternatives --install /usr/bin/ccp ccp /usr/bin/ccp-11 11
+    alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-11 11
 RUN useradd -m builder
 USER builder
 ADD scripts/ /home/builder/scripts/
