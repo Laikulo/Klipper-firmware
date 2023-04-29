@@ -74,6 +74,15 @@ function coalesce(){
 	return 1
 }
 
+function get_testconfs(){
+	klipper_dir="$(coalesce "$OPT_KLIPPER_DIR" "$KLIPPER_DIR")"
+	[[ $klipper_dir ]] || die "FATAL: Klikker dir not set" 1
+	cd "$klipper_dir/test/configs"
+	for tc in *.config; do
+	echo "${tc%.config}"
+	done
+}
+
 
 function main(){
 
@@ -84,8 +93,9 @@ OPT_KLIPPER_DIR=""
 OPT_OUTPUT_DIR=""
 
 ARGS_BAD=""
+DO_FUNC=""
 
-while getopts "vhc:C:d:o:" arg; do
+while getopts "vhc:C:d:o:L" arg; do
 	case $arg in
 		h)
 			print_usage
@@ -106,6 +116,9 @@ while getopts "vhc:C:d:o:" arg; do
 		o)
 			OPT_OUTPUT_DIR="${OPTARG}"
 			;;
+		L)
+			DO_FUNC=get_testconfs
+			;;
 		?)
 			ARGS_BAD=1
 			;;
@@ -115,6 +128,11 @@ while getopts "vhc:C:d:o:" arg; do
 done
 
 [[ $ARGS_BAD ]] && die "FATAL: Unkown Option(s)" 2 y
+
+if [[ $DO_FUNC ]]; then
+	$DO_FUNC
+	exit $?
+fi
 
 ## Validation of options
 any "$OPT_EXPLICIT_CONFIG" "$OPT_TEST_CONFIG" "$KLIPPER_FACTORY_CONFIG_FILE" "$KLIPPER_FACTORY_TESTCONFIG_NAME" || die "Build config is not specified" 2 y
