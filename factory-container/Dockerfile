@@ -7,6 +7,6 @@ RUN mkdir klipper && \
     git fetch --depth 1 "${klipper_repo}" "${klipper_ref}" && \
     git checkout FETCH_HEAD
 ENV KLIPPER_DIR="/home/builder/klipper"
-ADD factory.sh /home/builder/klipper/scripts/
-ENTRYPOINT [ "/home/builder/klipper/scripts/factory.sh" ]
+ADD factory.sh /home/builder/scripts/
+ENTRYPOINT [ "/home/builder/klipper/factory.sh" ]
 
