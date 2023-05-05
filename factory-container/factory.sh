@@ -13,6 +13,7 @@ function print_usage() {
 	-d Klipper source tree location
 	-h This help
 	-v Verbose builds
+        -M Run menuconfig (requires a tty)
 	END
 }
 
@@ -83,6 +84,39 @@ function get_testconfs(){
 	done
 }
 
+function menuconfig(){
+	any "$OPT_EXPLICIT_CONFIG" "$OPT_TEST_CONFIG" "$KLIPPER_FACTORY_CONFIG_FILE" "$KLIPPER_FACTORY_TESTCONFIG_NAME" || die "Build config is not specified" 2 y
+	one "$OPT_EXPLICIT_CONFIG" "$OPT_TEST_CONFIG" "$KLIPPER_FACTORY_CONFIG_FILE" "$KLIPPER_FACTORY_TESTCONFIG_NAME" || die "Build config is specified more than once" 2 y
+
+	one "$OPT_KLIPPER_DIR" "$KLIPPER_DIR" || die "Klipper directory not specified" 2 y
+
+	local output_dir="$(coalesce "$OPT_OUTPUT_DIR" "$KLIPPER_FACTORY_OUTPUT_DIR" "$KLIPPER_DIR/../dist")"
+
+	local klipper_workdir="$(coalesce "$OPT_KLIPPER_DIR" "$KLIPPER_DIR")"
+
+	local test_config="$(coalesce "$OPT_TEST_CONFIG" "$KLIPPER_FACTORY_CONFIG_FILE")"
+
+
+	if [[ $test_config ]]; then
+		config_path="${klipper_workdir}/test/configs/${test_config}.config"
+	else
+		config_path="$(realpath "$(coalesce "$OPT_EXPLICIT_CONFIG" "$KLIPPER_FACTORY_CONFIG_FILE")")"
+	fi
+
+	[[ $OPT_VERBOSE ]] && echo >&2 "Using build config at $config_path"
+	[[ -f $config_path ]] || die "Config file $config_path does not exist"
+	[[ -r $config_path ]] || die "Config file $config_path is not readable"
+
+	config_name="$(basename $config_path)"
+	config_name="${config_name%.config}"
+
+	set -e
+	cd "$klipper_workdir"
+	cp "$config_path" .config
+	make menuconfig
+	cp .config "$output_dir/$config_name.config"
+}
+
 
 function main(){
 
@@ -95,7 +129,7 @@ OPT_OUTPUT_DIR=""
 ARGS_BAD=""
 DO_FUNC=""
 
-while getopts "vhc:C:d:o:L" arg; do
+while getopts "vhc:C:d:o:LM" arg; do
 	case $arg in
 		h)
 			print_usage
@@ -118,6 +152,9 @@ while getopts "vhc:C:d:o:L" arg; do
 			;;
 		L)
 			DO_FUNC=get_testconfs
+			;;
+		M)
+			DO_FUNC=menuconfig
 			;;
 		?)
 			ARGS_BAD=1
