@@ -16,8 +16,8 @@ on:
         description: Klipper repo to use
         type: choice
         options:
-          - https://github.com/klipper3d/klipper.git
-          - https://github.com/laikulo/klipper.git
+          - https://github.com/Klipper3d/klipper.git
+          - https://github.com/Laikulo/klipper.git
       tagName:
           description: Tag to create
           type: string
