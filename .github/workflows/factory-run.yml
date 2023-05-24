@@ -39,13 +39,14 @@ jobs:
           CONFIG_NAME: "${{inputs.configName}}"
           FACTORY_TAG: "${{inputs.factoryTag}}"
         run: |
+          set -x
           tmp_dir="$(mktemp -d -t klipperfactory.XXXXXXXXXX)"
           if [[ $CONFIG_LITERAL ]]; then
             base64 -d <<<"$CONFIG_LITERAL" | gunzip > "$tmp_dir/$CONFIG_NAME.config"
           elif [[ $CONFIG_URL ]]; then
-            curl --fail -L "$CONFIG_URL" > "$tmp_dir/$CONFIG_NAME.conf"
+            curl --fail -L "$CONFIG_URL" > "$tmp_dir/$CONFIG_NAME.config"
           elif [[ $CONFIG_PATH ]]; then
-            cp "$CONFIG_PATH" "$tmp_dir/$CONFIG_NAME.conf"
+            cp "$CONFIG_PATH" "$tmp_dir/$CONFIG_NAME.config"
           else
             echo >&2 "Unable to locate config file"
             exit 2
