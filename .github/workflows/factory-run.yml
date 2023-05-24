@@ -1,0 +1,51 @@
+name: Factory Build (single)
+
+on:
+  workflow_dispatch:
+    inputs:
+      factoryTag:
+        description: The factory tag to use when building
+        type: string
+        required: true
+      configName:
+        description: Config Name
+        type: string
+        required: true
+      configLiteralb64gz:
+        description: base64+gzip-encoded config
+        type: string
+        required: false
+      configURL:
+        description: URL to download config from
+        type: string
+        required: false
+      configPath:
+        description: Path in this repo of config to use
+        type: string
+        required: false
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup build environment
+        run: |
+          config_name="{{inputs.configName}}"
+          tmp_dir="$(mktemp -d -t klipperfactory.XXXXXXXXXX)"
+          if [[ "{{inputs.configLiteralb64gz}}" ]]; then
+            base64 -d <<<"{{inputs.configLiteralb64gz}}" | gunzip > "$tmp_dir/$config_name.config"
+          elif [[ "{{inputs.configURL}}" ]]; then
+            curl --fail -L "{{inputs.configURL}}" > "$tmp_dir/$config_name.conf"
+          elif [[ "{{inputs.configPath}}" ]]; then
+            cp "{{inputs.configPath}}" "$tmp_dir/$config_name.conf"
+          else
+            echo >&2 "Unable to locate config file"
+            exit 2
+          fi
+          mkdir "$tmp_dir/out"
+          setfacl -Rm u:1000:rX "$tmp_dir"
+          setfacl -m u:1000:rwX "$tmp_dir/out"
+          docker run --rm -v "$tmp_dir":/mnt:z "ghcr.io/laikulo/klipper-firmware/factory:{{inputs.factoryTag}}" -c "/mnt/$config_name.config" -o /mnt/out
