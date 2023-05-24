@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Setup build environment
+      - name: Vuild klipper firmware
         env:
           CONFIG_LITERAL: "${{inputs.configLiteralb64gz}}"
           CONFIG_URL: "${{inputs.configURL}}"
@@ -55,7 +55,7 @@ jobs:
           setfacl -Rm u:1000:rX "$tmp_dir"
           setfacl -m u:1000:rwX "$tmp_dir/out"
           docker run --rm -v "$tmp_dir":/mnt:z "ghcr.io/laikulo/klipper-firmware/factory:$FACTORY_TAG" -c "/mnt/$CONFIG_NAME.config" -o /mnt/out
-          cp "$tmp_dir/out" "./factory-output"
+          cp -r "$tmp_dir/out" "./factory-output"
       - name: Upload
         uses: actions/upload-artifact@v3.1.2
         with: 
