@@ -33,11 +33,11 @@ jobs:
         uses: actions/checkout@v3
       - name: Setup build environment
         env:
-          CONFIG_LITERAL: "{{inputs.configLiteralb64gz}}"
-          CONFIG_URL: "{{inputs.configURL}}"
-          CONFIG_PATH: "{{inputs.configPath}}"
-          CONFIG_NAME: "{{inputs.configName}}"
-          FACTORY_TAG: "{{inputs.factoryTag}}"
+          CONFIG_LITERAL: "${{inputs.configLiteralb64gz}}"
+          CONFIG_URL: "${{inputs.configURL}}"
+          CONFIG_PATH: "${{inputs.configPath}}"
+          CONFIG_NAME: "${{inputs.configName}}"
+          FACTORY_TAG: "${{inputs.factoryTag}}"
         run: |
           tmp_dir="$(mktemp -d -t klipperfactory.XXXXXXXXXX)"
           if [[ $CONFIG_LITERAL ]]; then
