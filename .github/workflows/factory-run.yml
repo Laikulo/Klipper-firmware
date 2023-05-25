@@ -59,6 +59,11 @@ jobs:
           setfacl -m u:1000:rwX "$tmp_dir/out"
           docker run --rm -v "$tmp_dir":/mnt:z "ghcr.io/laikulo/klipper-firmware/factory:$FACTORY_TAG" -c "/mnt/$CONFIG_NAME.config" -o /mnt/out
           cp -r "$tmp_dir/out" "./factory-output"
+      - name: Upload to URL
+        if: "${{inputs.uploadURL}}"
+        run: |
+          set +x
+          curl -XPOST "${{inputs.uploadURL}}" --data "@"factory-output/*.tgz      
       - name: Upload to Github
         uses: actions/upload-artifact@v3.1.2
         with: 
