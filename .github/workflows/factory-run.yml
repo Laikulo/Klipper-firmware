@@ -64,7 +64,7 @@ jobs:
         run: |
           set +x
           output_files=( "factory-output/"*".tgz )
-          curl -XPOST "${{inputs.uploadURL}}" --data "@${output_files[0]}"     
+          curl -XPOST '${{inputs.uploadURL}}' --data "@${output_files[0]}"     
       - name: Upload to Github
         uses: actions/upload-artifact@v3.1.2
         with: 
