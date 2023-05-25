@@ -23,6 +23,10 @@ on:
         description: Path in this repo of config to use
         type: string
         required: false
+      uploadURL:
+        description: Upload result to
+        type: string
+        required: false
 jobs:
   build:
     runs-on: ubuntu-latest
