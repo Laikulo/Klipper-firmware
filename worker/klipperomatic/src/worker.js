@@ -66,15 +66,44 @@ export default {
 
     var bundle_key = `builds/${klipper_version}/${config_hash}.tgz`
     var bundle_obj = await env.KOM_BUCKET.head(bundle_key)
-    if (bundle_obj === null) {
-      return new Response(`Build not found for that config and version (${config_hash}, ${klipper_version})`, {"status": 404, "statusText": "Not Found" })
-      // TODO: Launch a GHA build for this configuration+version, and report information about that run.
-      // Maybe use a Worker Queue, or something to track builds in progress to prevent pointless rebuilds
-      // Probably need to generate a PUT signed url for the bundle.
-    }
 
     var bundle_url = r2_baseurl
     bundle_url.pathname = bundle_key
+
+    if (bundle_obj === null) {
+      var bundle_url_upload = bundle_url
+      bundle_url_upload.searchParams.set("X-Amz-Expires", "450");
+      var bundle_upload_signed = await r2.sign(
+        new Request(bundle_url_upload, {
+          method: 'POST'
+        }),
+        {
+          aws: { signQuery: true },
+        }
+      );
+      var bundle_upload_url = bundle_upload_signed.url;
+      var gha_req = await fetch("https://api.github.com/repos/Laikulo/Klipper-firmware/actions/workflows/factory-run.yml/dispatches", {
+        "method": "POST",
+        "headers": {
+          "Authorization": `Bearer ${env.GHA_TOKEN}`,
+          "User-Agent": "Klipper-O-Matic Worker by aaron@haun.guru/0.0.1"
+        },
+        "body": JSON.stringify({
+          "ref": "main",
+          "inputs": {
+            "factoryTag": klipper_version,
+            "configName": "klipperomatic",
+            "configURL": config_access_url,
+            "uploadURL": bundle_upload_url
+          }
+        })
+      });
+      console.log(await gha_req.text())
+      return new Response(`Build not found for that config and version (${config_hash}, ${klipper_version}) It has been statrted, check GHA for status`, {"status": 404, "statusText": "Not Found" })
+      // TODO: Make this a JSON response
+      // TODO: Store in-progress GHA builds somewhere, (?KV?) to prevent starting multiple, and to allow frontent to repeat for status.
+    }
+
 
     var bundle_access_signed = await r2.sign(
       new Request(bundle_url, {
