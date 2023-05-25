@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name: Vuild klipper firmware
+      - name: Build klipper firmware
         env:
           CONFIG_LITERAL: "${{inputs.configLiteralb64gz}}"
           CONFIG_URL: "${{inputs.configURL}}"
@@ -43,7 +43,6 @@ jobs:
           CONFIG_NAME: "${{inputs.configName}}"
           FACTORY_TAG: "${{inputs.factoryTag}}"
         run: |
-          set -x
           tmp_dir="$(mktemp -d -t klipperfactory.XXXXXXXXXX)"
           if [[ $CONFIG_LITERAL ]]; then
             base64 -d <<<"$CONFIG_LITERAL" | gunzip > "$tmp_dir/$CONFIG_NAME.config"
@@ -60,7 +59,7 @@ jobs:
           setfacl -m u:1000:rwX "$tmp_dir/out"
           docker run --rm -v "$tmp_dir":/mnt:z "ghcr.io/laikulo/klipper-firmware/factory:$FACTORY_TAG" -c "/mnt/$CONFIG_NAME.config" -o /mnt/out
           cp -r "$tmp_dir/out" "./factory-output"
-      - name: Upload
+      - name: Upload to Github
         uses: actions/upload-artifact@v3.1.2
         with: 
           path: factory-output/*.tgz
