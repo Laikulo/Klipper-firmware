@@ -12,7 +12,7 @@ RUN zypper -n ar -C "obs://home:Laikulo:cross-pru" cross-pru && \
     alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-${gcc_version} ${gcc_version} && \
     alternatives --install /usr/bin/g++ g++ /usr/bin/g++-${gcc_version} ${gcc_version} && \
     alternatives --install /usr/bin/cpp cpp /usr/bin/cpp-${gcc_version} ${gcc_version} && \
-    curl -L "https://more.musl.cc/13/x86_64-linux-musl/or1k-linux-musl-cross.tgz" | tar -xz -C /opt
+    curl -L "https://more.musl.cc/11/x86_64-linux-musl/or1k-linux-musl-cross.tgz" | tar -xz -C /opt
 ENV PATH=${PATH}:/opt/or1k-linux-musl-cross/bin/
 RUN useradd -m builder
 USER builder
