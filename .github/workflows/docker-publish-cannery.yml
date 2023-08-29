@@ -8,15 +8,15 @@ name: Docker (cannery)
 on:
   workflow_dispatch:
     inputs:
-      canBootVer:
-        description: CanBoot Version
+      katapultVer:
+        description: Katapult Version
         type: string
         required: true
-      canBootRepo:
-        description: CanBoot repo to use
+      katapultRepo:
+        description: Katapult repo to use
         type: choice
         options:
-          - https://github.com/arksine/CanBoot.git
+          - https://github.com/arksine/Katapult.git
       tagName:
           description: Tag to create
           type: string

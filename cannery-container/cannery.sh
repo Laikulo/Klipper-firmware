@@ -78,11 +78,11 @@ function menuconfig(){
 	any "$OPT_EXPLICIT_CONFIG" "$KLIPPER_CANNERY_CONFIG_FILE" || die "Build config is not specified" 2 y
 	one "$OPT_EXPLICIT_CONFIG" "$KLIPPER_CANNERY_CONFIG_FILE" || die "Build config is specified more than once" 2 y
 
-	one "$OPT_CANBOOT_DIR" "$CANBOOT_DIR" || die "CanBoot directory not specified" 2 y
+	one "$OPT_CANBOOT_DIR" "$KATAPULT_DIR" || die "CanBoot directory not specified" 2 y
 
-	local output_dir="$(coalesce "$OPT_OUTPUT_DIR" "$KLIPPER_CANBOOT_OUTPUT_DIR" "$CANBOOT_DIR/../dist")"
+	local output_dir="$(coalesce "$OPT_OUTPUT_DIR" "$KLIPPER_CANBOOT_OUTPUT_DIR" "$KATAPULT_DIR/../dist")"
 
-	local canboot_workdir="$(coalesce "$OPT_CANBOOT_DIR" "$CANBOOT_DIR")"
+	local canboot_workdir="$(coalesce "$OPT_CANBOOT_DIR" "$KATAPULT_DIR")"
 
 	local config_path="$(coalesce "$OPT_EXPLICIT_CONFIG" "$KLIPPER_CANNERY_CONFIG_FILE")"
 
@@ -156,11 +156,11 @@ fi
 any "$OPT_EXPLICIT_CONFIG" "$KLIPPER_CANNERY_CONFIG_FILE" || die "Build config is not specified" 2 y
 one "$OPT_EXPLICIT_CONFIG" "$KLIPPER_CANNERY_CONFIG_FILE" || die "Build config is specified more than once" 2 y
 
-one "$OPT_CANBOOT_DIR" "$CANBOOT_DIR" || die "CanBoot directory not specified" 2 y
+one "$OPT_CANBOOT_DIR" "$KATAPULT_DIR" || die "CanBoot directory not specified" 2 y
 
-local output_dir="$(coalesce "$OPT_OUTPUT_DIR" "$KLIPPER_CANBOOT_OUTPUT_DIR" "$CANBOOT_DIR/../dist")"
+local output_dir="$(coalesce "$OPT_OUTPUT_DIR" "$KLIPPER_CANBOOT_OUTPUT_DIR" "$KATAPULT_DIR/../dist")"
 
-local canboot_workdir="$(coalesce "$OPT_CANBOOT_DIR" "$CANBOOT_DIR")"
+local canboot_workdir="$(coalesce "$OPT_CANBOOT_DIR" "$KATAPULT_DIR")"
 
 local config_path="$(coalesce "$OPT_EXPLICIT_CONFIG" "$KLIPPER_CANNERY_CONFIG_FILE")"
 
@@ -188,24 +188,24 @@ echo >&2 "Building"
 make
 echo >&2 "Collecting results"
 [[ -d $output_dir ]] || mkdir "$output_dir"
-local distdir="$output_dir/canboot-$tag_name"
+local distdir="$output_dir/katapult-$tag_name"
 [[ -d $distdir ]] || mkdir $distdir
 distdir="$(realpath "$distdir")"
 
 shopt -s nullglob
-cp out/canboot.elf out/canboot.bi[n] out/deployer.* "$distdir"
+cp out/katapult.elf out/katapult.bi[n] out/deployer.* "$distdir"
 cd "$distdir"
 for i in canboot.*; do
-	mv "$i" "${i/canboot/canboot-$config_name}"
+	mv "$i" "${i/katapult/katapult-$config_name}"
 done
 for i in deployer.*; do
-	mv "$i" "${i/deployer/canboot.deployer-$config_name}"
+	mv "$i" "${i/deployer/katapult.deployer-$config_name}"
 done
-echo >&2 Built: canboot-* in "$distdir"
+echo >&2 Built: katapult-* in "$distdir"
 
-tar -czf "$output_dir/canboot-$tag_name.tgz" -C "$output_dir" "$(basename "$distdir")"
+tar -czf "$output_dir/katapult-$tag_name.tgz" -C "$output_dir" "$(basename "$distdir")"
 
-echo >&2 Created Archive at "$(realpath "$output_dir/canboot-$tag_name.tgz")"
+echo >&2 Created Archive at "$(realpath "$output_dir/katapult-$tag_name.tgz")"
 
 echo >&2 "Complete"
 	
