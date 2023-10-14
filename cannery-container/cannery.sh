@@ -193,7 +193,7 @@ local distdir="$output_dir/katapult-$tag_name"
 distdir="$(realpath "$distdir")"
 
 shopt -s nullglob
-cp out/katapult.elf out/katapult.bi[n] out/deployer.* "$distdir"
+cp out/katapult.elf out/katapult.bi[n] out/deployer.* out/*.u2f "$distdir"
 cd "$distdir"
 for i in canboot.*; do
 	mv "$i" "${i/katapult/katapult-$config_name}"
