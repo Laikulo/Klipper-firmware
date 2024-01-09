@@ -24,6 +24,6 @@ jobs:
         with:
           name: firmware_bundles
           path: dist/*.tar.gz
-          if-no-files-found: fail
+          if-no-files-found: error
           compression-level: 0 
     #TODO: Publish somehow
