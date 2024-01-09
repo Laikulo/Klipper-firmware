@@ -11,9 +11,9 @@ for conf in "${conflist[@]}"; do
 	tmp_out="${tmp_dir}/out"
 	mkdir "${tmp_conf}" "${tmp_out}"
 	cp "$conf" "${tmp_conf}/${conf_name}"
-    setfacl -m u:1000:rwX dist
-	setfacl -m d:u:1000:rwX dist
-	setfacl -m d:u:$(whoami):rwX dist
+    setfacl -m u:1000:rwX ${tmp_out}
+	setfacl -m d:u:1000:rwX ${tmp_out}
+	setfacl -m d:u:$(whoami):rwX ${tmp_out}
 	docker run --rm -v "${tmp_conf}:/mnt/conf:z" -v "${tmp_out}:/mnt/out:z" "ghcr.io/laikulo/klipper-firmware/factory:${1:-laikulo}" -c "/mnt/conf/${conf_name}" -o "/mnt/out"
 	cp -r "${tmp_out}/"*"."* "${out_dir}"
 	rm -rf "${tmp_dir}"
