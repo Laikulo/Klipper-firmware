@@ -1,0 +1,23 @@
+name: Factory Build (All Configs)
+
+on:
+  workflow_dispatch:
+    inputs:
+      factoryTag:
+        description: The factory tag to build
+        type: string
+        required: true
+
+jobs:
+  build_firmware_all:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      #release: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build all firmware configs for klipper
+        run: |
+          $PWD/.github/factory-build-all.sh ${{ inputs.factoryTag }}
+    #TODO: Archive and publish
+
