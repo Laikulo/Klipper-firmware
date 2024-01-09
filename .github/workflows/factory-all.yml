@@ -19,5 +19,11 @@ jobs:
       - name: Build all firmware configs for klipper
         run: |
           $PWD/.github/factory-build-all.sh ${{ inputs.factoryTag }}
-    #TODO: Archive and publish
-
+      - name: Archive resultant builds
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware_bundles
+          path: dist/*.tar.gz
+          if-no-files-found: fail
+          compression-level: 0 
+    #TODO: Publish somehow
