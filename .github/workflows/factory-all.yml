@@ -23,7 +23,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: firmware_bundles
-          path: dist/*.tar.gz
+          path: dist/*.tgz
           if-no-files-found: error
           compression-level: 0 
     #TODO: Publish somehow
