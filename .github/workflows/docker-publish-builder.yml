@@ -32,7 +32,10 @@ jobs:
         name: Checkout
         with:
           submodules: true
-
+          
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        
       - name: Setup buildx
         uses: docker/setup-buildx-action@v3
 
@@ -54,6 +57,7 @@ jobs:
       - name: Docker Build
         uses: docker/build-push-action@v5
         with:
+          platforms: linux/amd64,linux/arm64
           context: ./build-container
           file: ./build-container/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
